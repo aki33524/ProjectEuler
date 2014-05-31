@@ -29,16 +29,14 @@ def is_prime(n):
             return False
     return True
 
-def memoize(memo):
+def memoize(func):
     """decorator that chaches"""
-    def recieve_func(func):
-        import functools
-        @functools.wraps(func)
-        def wrapper(*args):
-            if memo.get(args):
-                return memo[args]
-            result = func(*args)
-            memo[args] = result
-            return result
-        return wrapper
-    return recieve_func
+    import functools
+    @functools.wraps(func)
+    def wrapper(*args):
+        func._memoized_values = getattr(func, '_memoized_values', {})
+        key = (func,args)
+        if key not in func._memoized_values:
+            func._memoized_values[key] = func(*args)
+        return func._memoized_values[key]
+    return wrapper
